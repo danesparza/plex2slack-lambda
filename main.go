@@ -40,11 +40,12 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	parseEnvironment()
 
 	//	Verify the webhook url has been set
+	log.Printf("PLEX2SLACK_WEBHOOK_URL from environment: %+v\n", webhookURL)
 
 	//	Step zero: Decode the body:
 	s, err := base64.StdEncoding.DecodeString(request.Body)
 	if err != nil {
-		log.Printf("There was an error base64 decoding the body: %v", err)
+		log.Printf("There was an error base64 decoding the body: %v\n", err)
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusBadRequest,
 			Headers: map[string]string{
@@ -56,14 +57,13 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	//	Print out what we have
-	log.Printf("%+v\n", string(s))
-
-	log.Printf("Headers: %+v\n", request.Headers)
+	//	log.Printf("%+v\n", string(s))
+	//	log.Printf("Headers: %+v\n", request.Headers)
 
 	//	First, get the content type.  Throw an error if we can't
 	mediaType, params, err := mime.ParseMediaType(request.Headers["Content-Type"])
 	if err != nil {
-		log.Printf("There was an error getting the content type: %v", err)
+		log.Printf("There was an error getting the content type: %v\n", err)
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusUnsupportedMediaType,
 			Headers: map[string]string{
@@ -79,7 +79,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 		//	Break apart the content into its parts
 		readForm := multipart.NewReader(strings.NewReader(string(s)), params["boundary"])
-		log.Printf("DEBUG:: boundary: %v\n", params["boundary"])
+		//  log.Printf("DEBUG:: boundary: %v\n", params["boundary"])
 
 		for {
 			part, errPart := readForm.NextPart()
@@ -87,11 +87,9 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 				break
 			}
 			if part.FormName() == "thumb" {
-				partBytes, _ := ioutil.ReadAll(part)
-				err := ioutil.WriteFile("thumb.jpg", partBytes, 0644)
-				if err != nil {
-					fmt.Printf("Error saving thumbnail: %v\n", err)
-				}
+				/*
+					No op
+				*/
 			} else if part.FormName() == "payload" {
 				partBytes, _ := ioutil.ReadAll(part)
 				msg := data.PlexMessage{}
