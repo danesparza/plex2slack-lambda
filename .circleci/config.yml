@@ -1,0 +1,49 @@
+# Golang CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version
+      - image: circleci/golang:1.10
+            
+    working_directory: /go/src/github.com/danesparza/plex2slack-lambda
+    steps:
+      - checkout
+
+      - run: 
+         name: Create the artifacts directory
+         command: mkdir -p /tmp/artifacts
+
+      - run: 
+         name: Install the Github release creator tool
+         command: go get github.com/tcnksm/ghr
+      
+      - run:
+         name: Install 'dep' tool
+         command: go get -u github.com/golang/dep/cmd/dep
+      
+      - run:
+         name: Get dependencies
+         command: dep ensure
+
+      - run:
+         name: Build AWS handler
+         command: env GOOS=linux go build -o plex2slack-lambda main.go
+
+      - run:
+         name: Package AWS handler
+         command: zip plex2slack-lambda_handler.zip ./plex2slack-lambda
+
+      - run:
+         name: Push package to artifacts
+         command: mv plex2slack-lambda_handler.zip /tmp/artifacts/
+
+      # Indicate we have artifacts
+      - store_artifacts:
+          path: /tmp/artifacts
+
+      - run: 
+         name: Create a release on Github
+         command: ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME v1.0.$CIRCLE_BUILD_NUM /tmp/artifacts || true
