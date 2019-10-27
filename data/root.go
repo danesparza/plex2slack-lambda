@@ -54,3 +54,33 @@ type PlexMessage struct {
 		UpdatedAt             int    `json:"updatedAt"`
 	} `json:"Metadata"`
 }
+
+// SlackRequestBody defines the message type to pass to a Slack Webhook (to post to a channel)
+type SlackRequestBody struct {
+	Text   string       `json:"text,omitempty"`
+	Blocks []SlackBlock `json:"blocks,omitempty"`
+}
+
+// SlackBlock defines a Slack block
+type SlackBlock struct {
+	// Type defines the type of block: section / context / divider
+	Type string `json:"type"`
+
+	// Text defines the text to send with the section type
+	Text *SlackText `json:"text,omitempty"`
+
+	// Elements defines the elements to use with the context type
+	Elements []SlackElement `json:"elements,omitempty"`
+}
+
+// SlackText defines the text to use with a section type
+type SlackText struct {
+	Type string `json:"type,omitempty"`
+	Text string `json:"text,omitempty"`
+}
+
+// SlackElement defines the element to use with a context type
+type SlackElement struct {
+	Type string `json:"type,omitempty"`
+	Text string `json:"text,omitempty"`
+}
