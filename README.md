@@ -1,5 +1,5 @@
 # plex2slack-lambda [![CircleCI](https://circleci.com/gh/danesparza/plex2slack-lambda.svg?style=shield)](https://circleci.com/gh/danesparza/plex2slack-lambda)
-Golang based AWS Lambda handler for sending plex webhook messages to a slack channel
+Golang based AWS Lambda handler for sending plex webhook messages to a slack channel.  For a standalone service, see [plex2slack](https://github.com/danesparza/plex2slack)
 
 ## Quick start
 ### AWS Lambda setup
